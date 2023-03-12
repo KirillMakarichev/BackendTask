@@ -80,4 +80,24 @@ internal class TreeProvider : ITreeProvider
 
         return true;
     }
+
+    public async Task<bool> DeleteNodeAsync(string treeName, long nodeId)
+    {
+        var node =
+            await _treeContext.Nodes
+                .Include(x => x.Children)
+                .FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == nodeId);
+        
+        if (node == null)
+            return false;
+
+        if (node.Children.Any())
+            return false;
+
+        _treeContext.Nodes.Remove(node);
+
+        await _treeContext.SaveChangesAsync();
+
+        return true;
+    }
 }

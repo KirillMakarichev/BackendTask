@@ -52,4 +52,14 @@ public class TreeController : ControllerBase
 
         return added ? Ok() : NotFound();
     }
+    
+    [Route("/api.user.[controller].node.delete")]
+    [HttpPost]
+    public async Task<IActionResult> Rename([FromQuery] string treeName,
+        [FromQuery] long nodeId)
+    {
+        var added = await _treeProvider.DeleteNodeAsync(treeName, nodeId);
+
+        return added ? Ok() : NotFound();
+    }
 }
