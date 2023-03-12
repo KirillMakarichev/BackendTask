@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BackendTask.Models.Entities;
 using BackendTask.Providers.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendTask.Controllers;
@@ -39,6 +38,17 @@ public class TreeController : ControllerBase
         [FromQuery] string nodeName)
     {
         var added = await _treeProvider.CreateNodeAsync(treeName, parentNodeId, nodeName);
+
+        return added ? Ok() : NotFound();
+    }
+    
+    [Route("/api.user.[controller].node.rename")]
+    [HttpPost]
+    public async Task<IActionResult> Rename([FromQuery] string treeName,
+        [FromQuery] long nodeId,
+        [FromQuery] string newNodeName)
+    {
+        var added = await _treeProvider.RenameNodeAsync(treeName, nodeId, newNodeName);
 
         return added ? Ok() : NotFound();
     }

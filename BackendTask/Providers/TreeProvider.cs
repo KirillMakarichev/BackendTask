@@ -62,4 +62,22 @@ internal class TreeProvider : ITreeProvider
             return false;
         }
     }
+
+    public async Task<bool> RenameNodeAsync(string treeName, long nodeId, string newNodeName)
+    {
+        var node =
+            await _treeContext.Nodes.FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == nodeId);
+        
+        if (node == null)
+            return false;
+
+        if (node.ParentNodeId == null)
+            return false;
+
+        node.Name = newNodeName;
+
+        await _treeContext.SaveChangesAsync();
+
+        return true;
+    }
 }
