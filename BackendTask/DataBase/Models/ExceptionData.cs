@@ -7,4 +7,8 @@ internal class ExceptionData
 {
     public long Id { get; set; }
     public string Message { get; set; }
+    public string TraceId { get; set; }
+    public string[] QueryParameters { get; set; }
+    public string[] Headers { get; set; }
+    public string Body { get; set; }
 }

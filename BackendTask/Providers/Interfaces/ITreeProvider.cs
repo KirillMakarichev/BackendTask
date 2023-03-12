@@ -1,11 +1,12 @@
-﻿using BackendTask.DataBase.Models;
+﻿using BackendTask.Models.Entities;
+using TreeNode = BackendTask.DataBase.Models.TreeNode;
 
 namespace BackendTask.Providers.Interfaces;
 
 internal interface ITreeProvider
 {
     Task<TreeNode> GetOrCreateAsync(string name);
-    Task<bool> CreateNodeAsync(string treeName, long parentNodeId, string nodeName);
-    Task<bool> RenameNodeAsync(string treeName, long nodeId, string newNodeName);
-    Task<bool> DeleteNodeAsync(string treeName, long nodeId);
+    Task<ProcessingResponse> CreateNodeAsync(string treeName, long parentNodeId, string nodeName);
+    Task<ProcessingResponse> RenameNodeAsync(string treeName, long nodeId, string newNodeName);
+    Task<ProcessingResponse> DeleteNodeAsync(string treeName, long nodeId);
 }

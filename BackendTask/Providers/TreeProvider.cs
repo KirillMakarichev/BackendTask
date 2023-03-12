@@ -1,7 +1,8 @@
 ﻿using BackendTask.DataBase;
-using BackendTask.DataBase.Models;
+using BackendTask.Models.Entities;
 using BackendTask.Providers.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using TreeNode = BackendTask.DataBase.Models.TreeNode;
 
 namespace BackendTask.Providers;
 
@@ -36,18 +37,21 @@ internal class TreeProvider : ITreeProvider
         return tree;
     }
 
-    public async Task<bool> CreateNodeAsync(string treeName, long parentNodeId, string nodeName)
+    public async Task<ProcessingResponse> CreateNodeAsync(string treeName, long parentNodeId, string nodeName)
     {
         var node =
             await _treeContext.Nodes
                 .Include(x => x.Children)
-                .FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == parentNodeId);
+                .FirstOrDefaultAsync(x => x.Id == parentNodeId);
 
         if (node == null)
-            return false;
+            return new ProcessingResponse($"Node with ID = {parentNodeId} was not found");
 
+        if (node.RootName != treeName)
+            return new ProcessingResponse("Requested node was found, but it doesn't belong your tree");
+        
         if (node.Children.Any(x => x.Name == nodeName))
-            return false;
+            return new ProcessingResponse("Duplicate name");
         
         _treeContext.Nodes.Add(new TreeNode()
         {
@@ -57,44 +61,51 @@ internal class TreeProvider : ITreeProvider
         });
 
         await _treeContext.SaveChangesAsync();
-        return true;
+        return new ProcessingResponse();
     }
 
-    public async Task<bool> RenameNodeAsync(string treeName, long nodeId, string newNodeName)
+    public async Task<ProcessingResponse> RenameNodeAsync(string treeName, long nodeId, string newNodeName)
     {
         var node =
-            await _treeContext.Nodes.FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == nodeId);
-        
-        if (node == null)
-            return false;
+            await _treeContext.Nodes
+                .FirstOrDefaultAsync(x => x.Id == nodeId);
 
+        if (node == null)
+            return new ProcessingResponse($"Node with ID = {nodeId} was not found");
+
+        if (node.RootName != treeName)
+            return new ProcessingResponse("Requested node was found, but it doesn't belong your tree");
+        
         if (node.ParentNodeId == null)
-            return false;
+            return new ProcessingResponse("Couldn't rename root node");
 
         node.Name = newNodeName;
 
         await _treeContext.SaveChangesAsync();
 
-        return true;
+        return new ProcessingResponse();
     }
 
-    public async Task<bool> DeleteNodeAsync(string treeName, long nodeId)
+    public async Task<ProcessingResponse> DeleteNodeAsync(string treeName, long nodeId)
     {
         var node =
             await _treeContext.Nodes
                 .Include(x => x.Children)
-                .FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == nodeId);
-        
-        if (node == null)
-            return false;
+                .FirstOrDefaultAsync(x => x.Id == nodeId);
 
+        if (node == null)
+            return new ProcessingResponse($"Node with ID = {nodeId} was not found");
+
+        if (node.RootName != treeName)
+            return new ProcessingResponse("Requested node was found, but it doesn't belong your tree");
+        
         if (node.Children.Any())
-            return false;
+            return new ProcessingResponse("You have to delete all children nodes first");
 
         _treeContext.Nodes.Remove(node);
 
         await _treeContext.SaveChangesAsync();
 
-        return true;
+        return new ProcessingResponse();
     }
 }
