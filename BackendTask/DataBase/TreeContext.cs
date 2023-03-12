@@ -1,4 +1,4 @@
-﻿using BackendTask.Models.Entities;
+﻿using BackendTask.DataBase.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackendTask.DataBase;
