@@ -8,6 +8,6 @@ internal class Exception
 {
     public long Id { get; set; }
     public ExceptionType ExceptionType { get; set; }
-    public long CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
     public ExceptionData Data { get; set; }
 }

@@ -13,6 +13,7 @@ internal static class ContextExtensions
             Headers = request.Headers.Select(x => $"{x.Key}: {x.Value}").ToArray(),
             QueryParameters = request.Query.Select(x => $"{x.Key}: {x.Value}").ToArray(),
             TraceId = context.TraceIdentifier,
+            Path = request.Path,
             Message = message
         };
     }

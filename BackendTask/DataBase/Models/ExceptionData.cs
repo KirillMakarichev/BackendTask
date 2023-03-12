@@ -6,6 +6,8 @@ namespace BackendTask.DataBase.Models;
 internal class ExceptionData
 {
     public long Id { get; set; }
+    public long ExceptionId { get; set; }
+    public string Path { get; set; }
     public string Message { get; set; }
     public string TraceId { get; set; }
     public string[] QueryParameters { get; set; }

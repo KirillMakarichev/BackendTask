@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendTask.Migrations
 {
     [DbContext(typeof(TreeContext))]
-    [Migration("20230312154027_Exceptions_init2")]
-    partial class Exceptions_init2
+    [Migration("20230312232221_Path")]
+    partial class Path
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,18 +33,13 @@ namespace BackendTask.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CreatedAt")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DataId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ExceptionType")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DataId");
 
                     b.ToTable("exceptions");
                 });
@@ -57,11 +52,37 @@ namespace BackendTask.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("ExceptionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string[]>("Headers")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string[]>("QueryParameters")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("TraceId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ExceptionId")
+                        .IsUnique();
 
                     b.ToTable("exceptions_data");
                 });
@@ -95,15 +116,13 @@ namespace BackendTask.Migrations
                     b.ToTable("nodes");
                 });
 
-            modelBuilder.Entity("BackendTask.DataBase.Models.Exception", b =>
+            modelBuilder.Entity("BackendTask.DataBase.Models.ExceptionData", b =>
                 {
-                    b.HasOne("BackendTask.DataBase.Models.ExceptionData", "Data")
-                        .WithMany()
-                        .HasForeignKey("DataId")
+                    b.HasOne("BackendTask.DataBase.Models.Exception", null)
+                        .WithOne("Data")
+                        .HasForeignKey("BackendTask.DataBase.Models.ExceptionData", "ExceptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Data");
                 });
 
             modelBuilder.Entity("BackendTask.DataBase.Models.TreeNode", b =>
@@ -113,6 +132,12 @@ namespace BackendTask.Migrations
                         .HasForeignKey("ParentNodeId");
 
                     b.Navigation("ParentNode");
+                });
+
+            modelBuilder.Entity("BackendTask.DataBase.Models.Exception", b =>
+                {
+                    b.Navigation("Data")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BackendTask.DataBase.Models.TreeNode", b =>

@@ -15,6 +15,10 @@ builder.Services.AddTransient<ITreeProvider, TreeProvider>();
 builder.Services.AddTransient<IExceptionsProvider, ExceptionsProvider>();
 var app = builder.Build();
 
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<TreeContext>();
+dbContext.Database.Migrate();
+
 app.UseMiddleware<LoggingMiddleware>();
 app.MapControllers();
 
