@@ -54,8 +54,8 @@ public class TreeController : ControllerBase
     }
     
     [Route("/api.user.[controller].node.delete")]
-    [HttpPost]
-    public async Task<IActionResult> Rename([FromQuery] string treeName,
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromQuery] string treeName,
         [FromQuery] long nodeId)
     {
         var added = await _treeProvider.DeleteNodeAsync(treeName, nodeId);

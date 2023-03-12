@@ -1,11 +1,14 @@
 ﻿using BackendTask.DataBase.Models;
 using Microsoft.EntityFrameworkCore;
+using Exception = BackendTask.DataBase.Models.Exception;
 
 namespace BackendTask.DataBase;
 
 internal class TreeContext : DbContext
 {
     public DbSet<TreeNode> Nodes { get; set; }
+    public DbSet<ExceptionData> ExceptionData { get; set; }
+    public DbSet<Exception> Exceptions { get; set; }
 
     public TreeContext(DbContextOptions<TreeContext> options) : base(options)
     {

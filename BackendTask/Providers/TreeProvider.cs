@@ -38,12 +38,17 @@ internal class TreeProvider : ITreeProvider
 
     public async Task<bool> CreateNodeAsync(string treeName, long parentNodeId, string nodeName)
     {
-        var nodeExists =
-            await _treeContext.Nodes.AnyAsync(x => x.RootName == treeName && x.Id == parentNodeId);
+        var node =
+            await _treeContext.Nodes
+                .Include(x => x.Children)
+                .FirstOrDefaultAsync(x => x.RootName == treeName && x.Id == parentNodeId);
 
-        if (!nodeExists)
+        if (node == null)
             return false;
 
+        if (node.Children.Any(x => x.Name == nodeName))
+            return false;
+        
         _treeContext.Nodes.Add(new TreeNode()
         {
             Name = nodeName,
@@ -51,16 +56,8 @@ internal class TreeProvider : ITreeProvider
             RootName = treeName
         });
 
-        try
-        {
-            await _treeContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return false;
-        }
+        await _treeContext.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> RenameNodeAsync(string treeName, long nodeId, string newNodeName)
