@@ -39,6 +39,12 @@ internal class TreeProvider : ITreeProvider
 
     public async Task<ProcessingResponse> CreateNodeAsync(string treeName, long parentNodeId, string nodeName)
     {
+        if(string.IsNullOrWhiteSpace(treeName))
+            return new ProcessingResponse($"The {nameof(treeName)} field is required.");
+        
+        if(string.IsNullOrWhiteSpace(nodeName))
+            return new ProcessingResponse($"The {nameof(nodeName)} field is required.");
+
         var node =
             await _treeContext.Nodes
                 .Include(x => x.Children)
@@ -66,6 +72,9 @@ internal class TreeProvider : ITreeProvider
 
     public async Task<ProcessingResponse> RenameNodeAsync(string treeName, long nodeId, string newNodeName)
     {
+        if(string.IsNullOrWhiteSpace(treeName))
+            return new ProcessingResponse($"The {nameof(treeName)} field is required.");
+
         var node =
             await _treeContext.Nodes
                 .FirstOrDefaultAsync(x => x.Id == nodeId);
@@ -88,6 +97,9 @@ internal class TreeProvider : ITreeProvider
 
     public async Task<ProcessingResponse> DeleteNodeAsync(string treeName, long nodeId)
     {
+        if(string.IsNullOrWhiteSpace(treeName))
+            return new ProcessingResponse($"The {nameof(treeName)} field is required.");
+
         var node =
             await _treeContext.Nodes
                 .Include(x => x.Children)
