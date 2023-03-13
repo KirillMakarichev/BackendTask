@@ -1,4 +1,6 @@
-﻿using BackendTask.Models.Routs.Requests;
+﻿using AutoMapper;
+using BackendTask.Models.Routs.Requests;
+using BackendTask.Models.Routs.Responses;
 using BackendTask.Providers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +10,12 @@ namespace BackendTask.Controllers;
 public class JournalController : ControllerBase
 {
     private readonly IExceptionsProvider _exceptionsProvider;
+    private readonly IMapper _mapper;
 
     public JournalController(IServiceProvider serviceProvider)
     {
         _exceptionsProvider = serviceProvider.GetRequiredService<IExceptionsProvider>();
+        _mapper = serviceProvider.GetRequiredService<IMapper>();
     }
 
     [HttpGet]
@@ -21,7 +25,7 @@ public class JournalController : ControllerBase
     {
         var (count, exceptions) = await _exceptionsProvider.GetExceptionsAsync(take, skip, filter);
 
-        return Ok(new { skip, count, items = exceptions });
+        return Ok(new { skip, count, items = _mapper.Map<List<ExceptionResponse>>(exceptions) });
     }
     
     [HttpGet]
