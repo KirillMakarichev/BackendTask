@@ -48,7 +48,7 @@ internal class ExceptionsProvider : IExceptionsProvider
             exceptions = exceptions.Where(x => x.CreatedAt >= filter.From);
         
         if (filter.To > DateTime.MinValue)
-            exceptions = exceptions.Where(x => x.CreatedAt <= filter.From);
+            exceptions = exceptions.Where(x => x.CreatedAt <= filter.To);
 
         if (!string.IsNullOrWhiteSpace(filter.Search))
             exceptions = exceptions.Where(x => x.Data.Message.ToLower().Contains(filter.Search.ToLower()));
