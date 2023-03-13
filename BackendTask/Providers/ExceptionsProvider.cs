@@ -68,7 +68,7 @@ internal class ExceptionsProvider : IExceptionsProvider
 
     public async Task<ExceptionData> GetExceptionAsync(long id)
     {
-        var exceptionData = await _treeContext.ExceptionData.SingleAsync(x => x.Id == id);
+        var exceptionData = await _treeContext.ExceptionData.SingleAsync(x => x.ExceptionId == id);
 
         return exceptionData;
     }
